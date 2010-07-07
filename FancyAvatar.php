@@ -1,13 +1,15 @@
 <?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
 
 /**
- * TYPOlight webCMS
- * Copyright (C) 2005 Leo Feyer
+ * Contao Open Source CMS
+ * Copyright (C) 2005-2010 Leo Feyer
+ *
+ * Formerly known as TYPOlight Open Source CMS.
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 3 of the License, or (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,10 +18,10 @@
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program. If not, please visit the Free
- * Software Foundation website at http://www.gnu.org/licenses/.
+ * Software Foundation website at <http://www.gnu.org/licenses/>.
  *
  * PHP version 5
- * @copyright  Andreas Schempp 2009
+ * @copyright  Andreas Schempp 2009-2010
  * @author     Andreas Schempp <andreas@schempp.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html
  * @version    $Id$
@@ -73,8 +75,7 @@ class FancyAvatar extends Widget
 		
 		$GLOBALS['TL_CSS'][] = 'system/modules/fancyavatar/html/fancyavatar.css';
 		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/fancyavatar/html/bycropper.js';
-		$GLOBALS['TL_JAVASCRIPT'][] = 'plugins/fancyupload/Fx.ProgressBar.js';
-		$GLOBALS['TL_JAVASCRIPT'][] = 'plugins/fancyupload/Swiff.Uploader.js';
+		$GLOBALS['TL_JAVASCRIPT'][] = 'plugins/fancyupload/js/fancyupload.js';
 		
 		
 		$strBuffer = sprintf('<div id="fancyavatar_%s" class="fancyavatar" style="background-image: url(%s); height: %spx; width: %spx"><a href="#" id="select-%s" class="upload">%s</a><a class="delete" href="#"><img src="system/themes/default/images/delete.gif" /></a></div>',
