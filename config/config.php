@@ -49,3 +49,12 @@ $GLOBALS['TL_FFL']['avatar']				= 'FormFancyAvatar';
  */
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][]	= array('FancyAvatar', 'replaceTags');
 
+
+/**
+ * Default config
+ */
+$GLOBALS['TL_CONFIG']['avatar_dir'] = $GLOBALS['TL_CONFIG']['uploadPath'] . '/avatars';
+$GLOBALS['TL_CONFIG']['avatar_maxsize'] = '500000';
+$GLOBALS['TL_CONFIG']['avatar_maxdims'] = '128';
+$GLOBALS['TL_CONFIG']['avatar_preview'] = '300';
+
