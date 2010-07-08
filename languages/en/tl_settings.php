@@ -29,18 +29,16 @@
 
 
 /**
- * Miscellaneous
+ * Fields
  */
-$GLOBALS['TL_LANG']['MSC']['avatar_upload']		= 'Upload avatar';
-$GLOBALS['TL_LANG']['MSC']['avatar_confirm']	= 'Do you really want to delete your avatar?';
-$GLOBALS['TL_LANG']['MSC']['avatar_save']		= 'Save';
-$GLOBALS['TL_LANG']['MSC']['avatar_cancel']		= 'Cancel';
+$GLOBALS['TL_LANG']['tl_settings']['avatar_dir']		= array('Upload directory', 'Please select the upload directory. Default is <em>tl_files/avatars</em>.');
+$GLOBALS['TL_LANG']['tl_settings']['avatar_maxsize']	= array('Max. file size', 'Maximum file size for uploads in byte.');
+$GLOBALS['TL_LANG']['tl_settings']['avatar_maxdims']	= array('Dimensions', 'Select the avatar width and heigth in pixel.');
+$GLOBALS['TL_LANG']['tl_settings']['avatar_preview']	= array('Preview size', 'Enter the size for the preview and cut image.');
 
 
 /**
- * Errors
+ * Legends
  */
-$GLOBALS['TL_LANG']['ERR']['avatar_upload']		= 'Error while uploading the file. Please try again.';
-$GLOBALS['TL_LANG']['ERR']['avatar_size']		= 'Please select an image smaller than %s KB.';
-$GLOBALS['TL_LANG']['ERR']['avatar_general']	= 'This file could not be processed. Please try another image.';
+$GLOBALS['TL_LANG']['tl_settings']['avatar_legend']		= 'Avatar';
 

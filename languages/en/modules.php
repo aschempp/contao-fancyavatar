@@ -29,18 +29,13 @@
 
 
 /**
- * Miscellaneous
+ * Extension folder
  */
-$GLOBALS['TL_LANG']['MSC']['avatar_upload']		= 'Upload avatar';
-$GLOBALS['TL_LANG']['MSC']['avatar_confirm']	= 'Do you really want to delete your avatar?';
-$GLOBALS['TL_LANG']['MSC']['avatar_save']		= 'Save';
-$GLOBALS['TL_LANG']['MSC']['avatar_cancel']		= 'Cancel';
+$GLOBALS['TL_LANG']['MOD']['fancyavatar']	= 'Avatar (FancyUpload)';
 
 
 /**
- * Errors
+ * Frontend modules
  */
-$GLOBALS['TL_LANG']['ERR']['avatar_upload']		= 'Error while uploading the file. Please try again.';
-$GLOBALS['TL_LANG']['ERR']['avatar_size']		= 'Please select an image smaller than %s KB.';
-$GLOBALS['TL_LANG']['ERR']['avatar_general']	= 'This file could not be processed. Please try another image.';
+$GLOBALS['TL_LANG']['FMD']['avatar']		= array('Avatar', 'allows frontend member to change their avatar.');
 
