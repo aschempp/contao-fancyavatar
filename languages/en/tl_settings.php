@@ -32,6 +32,7 @@
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_settings']['avatar_dir']		= array('Upload directory', 'Please select the upload directory. Default is <em>tl_files/avatars</em>.');
+$GLOBALS['TL_LANG']['tl_settings']['avatar_default']	= array('Default avatar', 'Please select the default avatar if a member has not uploaded an image.');
 $GLOBALS['TL_LANG']['tl_settings']['avatar_maxsize']	= array('Max. file size', 'Maximum file size for uploads in byte.');
 $GLOBALS['TL_LANG']['tl_settings']['avatar_maxdims']	= array('Dimensions', 'Select the avatar width and heigth in pixel.');
 $GLOBALS['TL_LANG']['tl_settings']['avatar_preview']	= array('Preview size', 'Enter the size for the preview and cut image.');

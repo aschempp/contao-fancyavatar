@@ -44,6 +44,9 @@ class FancyAvatar extends Widget
 	 */
 	public function __construct($arrAttributes=false)
 	{
+		if (!$arrAttributes)
+			parent::__construct(false);
+		
 		$this->strId = $arrAttributes['id'];
 		$_SESSION['AJAX-FFL'][$this->strId] = array('type'=>'avatar');
 		
@@ -69,8 +72,15 @@ class FancyAvatar extends Widget
 	public function generate()
 	{
 		$this->filename = $this->filename ? $this->filename : $this->strTable.'_%s';
-		$this->maxdims = $this->maxdims ? $this->maxdims : $GLOBALS['TL_CONFIG']['avatar_maxdims'];
+		$this->maxdims = $this->maxdims ? $this->maxdims : deserialize($GLOBALS['TL_CONFIG']['avatar_maxdims'], true);
 		$this->maxsize = $this->maxsize ? $this->maxsize : $GLOBALS['TL_CONFIG']['avatar_maxsize'];
+		
+		if (!$this->maxdims[1])
+		{
+			$arrSize = $this->maxdims;
+			$arrSize[1] = $arrSize[0];
+			$this->maxdims = $arrSize;
+		}
 		
 		
 		$GLOBALS['TL_CSS'][] = 'system/modules/fancyavatar/html/fancyavatar.css';
@@ -80,9 +90,9 @@ class FancyAvatar extends Widget
 		
 		$strBuffer = sprintf('<div id="fancyavatar_%s" class="fancyavatar" style="background-image: url(%s); height: %spx; width: %spx"><a href="#" id="select-%s" class="upload">%s</a><a class="delete" href="#"><img src="system/themes/default/images/delete.gif" /></a></div>',
 						$this->strId,
-						(is_file(TL_ROOT . '/' . $this->varValue) ? $this->getImage($this->varValue, $GLOBALS['TL_CONFIG']['avatar_maxdims'], $GLOBALS['TL_CONFIG']['avatar_maxdims']) : $this->getDefaultAvatar()),
-						($GLOBALS['TL_CONFIG']['avatar_maxdims'] + 25),
-						($GLOBALS['TL_CONFIG']['avatar_maxdims'] + 2),
+						(is_file(TL_ROOT . '/' . $this->varValue) ? $this->getImage($this->varValue, $this->maxdims[0], $this->maxdims[1]) : $this->getDefaultAvatar()),
+						($this->maxdims[1] + 25),
+						($this->maxdims[0] + 2),
 						$this->strId,
 						$GLOBALS['TL_LANG']['MSC']['avatar_upload']);
 						
@@ -150,9 +160,9 @@ window.addEvent('domready', function() {
 						
 						new ByCropper('bycropper_" . $this->strId . "', 'form_" . $this->strId . "', {
 							borderPath: 'system/modules/fancyavatar/html/',
-							minWidth: " . $GLOBALS['TL_CONFIG']['avatar_maxdims'] . ",
-							minHeight: " . $GLOBALS['TL_CONFIG']['avatar_maxdims'] . ",
-							ratio: [1, 1],
+							minWidth: " . $this->maxdims[0] . ",
+							minHeight: " . $this->maxdims[1] . ",
+							ratio: [" . $this->maxdims[0] . ", " . $this->maxdims[1] . "],
 							maskColor: '#000000',
 							maskOpacity: 0.8
 						});
@@ -227,7 +237,7 @@ window.addEvent('domready', function() {
 				$this->import('Files');
 				
 				// Alle bisherigen Avatar-Dateien löschen
-				$this->Files->delete('tl_files/avatars/' . sprintf($this->filename, $this->currentRecord) . '.jpg');
+				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpg');
 				foreach( scandir(TL_ROOT . '/system/html/') as $file )
 				{
 					if (strpos($file, sprintf($this->filename, $this->currentRecord)) !== false)
@@ -236,7 +246,7 @@ window.addEvent('domready', function() {
 					}
 				}
 				
-				$strNewImage = 'tl_files/avatars/' . sprintf($this->filename, $this->currentRecord) . '.jpg';
+				$strNewImage = $GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpg';
 				$strCroppedImage = $this->cropImage($_SESSION['FILES'][$this->strName]['tmp_name'], $this->Input->post('w'), $this->Input->post('h'), $this->Input->post('x'), $this->Input->post('y'));
 				
 				$this->Files->rename($strCroppedImage, $strNewImage);
@@ -247,7 +257,7 @@ window.addEvent('domready', function() {
 				
 			case 'delete':
 				$this->import('Files');
-				$this->Files->delete('tl_files/avatars/' . sprintf($this->filename, $this->currentRecord) . '.jpg');
+				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpg');
 				return $this->getDefaultAvatar();
 				break;
 		}
@@ -460,21 +470,25 @@ window.addEvent('domready', function() {
 		return $strDir;
 	}
 	
-	protected function getDefaultAvatar($intSize=false)
+	
+	protected function getDefaultAvatar($arrSize=false)
 	{
-		if (!$intSize)
+		if (is_file(TL_ROOT . '/' . $GLOBALS['TL_CONFIG']['avatar_default']))
 		{
-			$intSize = $GLOBALS['TL_CONFIG']['avatar_maxdims'];
-		}
-		
-		$strDir = $this->getAvatarDirectory();
-		
-		if (is_file(TL_ROOT . '/' . $strDir . '/default' . $intSize . '.png'))
-		{
-			return $strDir . '/default' . $intSize . '.png';
+			if (!$arrSize)
+			{
+				$arrSize = deserialize($GLOBALS['TL_CONFIG']['avatar_maxdims'], true);
+				
+				if (!$arrSize[1])
+				{
+					$arrSize[1] = $arrSize[0];
+				}
+			}
+
+			return $this->getImage($GLOBALS['TL_CONFIG']['avatar_default'], $arrSize[0], $arrSize[1]);
 		}
 			
-		return $this->getImage($strDir . '/default128.png', $intSize, $intSize);
+		return '';
 	}
 	
 	
@@ -516,16 +530,28 @@ window.addEvent('domready', function() {
 				}
 			}
 			
-			$intSize = $GLOBALS['TL_CONFIG']['avatar_maxdims'];
+			$arrSize = deserialize($GLOBALS['TL_CONFIG']['avatar_maxdims'], true);
+			
+			if (!$arrSize[1])
+			{
+				$arrSize[1] = $arrSize[0];
+			}
+			
 			if (strlen($arrTag[3]))
 			{
-				$intSize = $arrTag[3];
+				$arrSize[0] = $arrTag[3];
+				$arrSize[1] = $arrTag[3];
+			}
+			
+			if (strlen($arrTag[4]))
+			{
+				$arrSize[1] = $arrTag[4];
 			}
 
 			return sprintf('<img src="%s" alt="" height="%s" width="%s" class="avatar" />', 
-							(is_file(TL_ROOT . '/' . $strImage) ? $this->getImage($strImage, $intSize, $intSize) : $this->getDefaultAvatar($intSize)),
-							$intSize,
-							$intSize);
+							(is_file(TL_ROOT . '/' . $strImage) ? $this->getImage($strImage, $arrSize[0], $arrSize[1]) : $this->getDefaultAvatar($arrSize)),
+							$arrSize[1],
+							$arrSize[0]);
 		}
 		
 		return false;

@@ -29,7 +29,7 @@
 /**
  * Palettes
  */
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{avatar_legend},avatar_dir,avatar_maxsize,avatar_maxdims,avatar_preview';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{avatar_legend},avatar_dir,avatar_default,avatar_maxsize,avatar_maxdims,avatar_preview';
 
 
 /**
@@ -42,6 +42,13 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['avatar_dir'] = array
 	'eval'			=> array('fieldType'=>'radio', 'mandatory'=>true),
 );
 
+$GLOBALS['TL_DCA']['tl_settings']['fields']['avatar_default'] = array
+(
+	'label'			=>	&$GLOBALS['TL_LANG']['tl_settings']['avatar_default'],
+	'inputType'		=> 'fileTree',
+	'eval'			=> array('fieldType'=>'radio', 'files'=>true, 'filesOnly'=>true, 'extensions'=>'jpg,jpeg,png,gif'),
+);
+
 $GLOBALS['TL_DCA']['tl_settings']['fields']['avatar_maxsize'] = array
 (
 	'label'			=>	&$GLOBALS['TL_LANG']['tl_settings']['avatar_maxsize'],
@@ -52,9 +59,8 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['avatar_maxsize'] = array
 $GLOBALS['TL_DCA']['tl_settings']['fields']['avatar_maxdims'] = array
 (
 	'label'			=>	&$GLOBALS['TL_LANG']['tl_settings']['avatar_maxdims'],
-	'inputType'		=> 'select',
-	'options'		=> array(32, 48, 64, 80, 100, 128),
-	'eval'			=> array('mandatory'=>true),
+	'inputType'		=> 'text',
+	'eval'			=> array('mandatory'=>true, 'multiple'=>true, 'size'=>2),
 );
 
 $GLOBALS['TL_DCA']['tl_settings']['fields']['avatar_preview'] = array
