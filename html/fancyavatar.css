@@ -1,8 +1,10 @@
 .fancyavatar {
 	position: relative;
 	border: 1px solid #eee;
-	background-position: 1px 1px;
+	padding: 10px;
+	background-position: 11px 11px;
 	background-repeat: no-repeat;
+	min-width: 105px;
 }
  
 .fancyavatar a {

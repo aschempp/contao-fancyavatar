@@ -88,7 +88,7 @@ class FancyAvatar extends Widget
 		$GLOBALS['TL_JAVASCRIPT'][] = 'plugins/fancyupload/js/fancyupload.js';
 		
 		
-		$strBuffer = sprintf('<div id="fancyavatar_%s" class="fancyavatar" style="background-image: url(%s); height: %spx; width: %spx"><a href="#" id="select-%s" class="upload">%s</a><a class="delete" href="#"><img src="system/themes/default/images/delete.gif" /></a></div>',
+		$strBuffer = sprintf('<div id="fancyavatar_%s" class="fancyavatar" style="background-image:url(%s); height:%spx; width:%spx"><a href="#" id="select-%s" class="upload">%s</a><a class="delete" href="#"><img src="system/themes/default/images/delete.gif"></a></div>',
 						$this->strId,
 						(is_file(TL_ROOT . '/' . $this->varValue) ? $this->getImage($this->varValue, $this->maxdims[0], $this->maxdims[1]) : $this->getDefaultAvatar()),
 						($this->maxdims[1] + 25),
@@ -101,6 +101,7 @@ class FancyAvatar extends Widget
 		$strBuffer .= "
 <script type=\"text/javascript\">
 <!--//--><![CDATA[//><!--
+" . (TL_MODE == 'FE' ? "var REQUEST_TOKEN = '".REQUEST_TOKEN."';" : '') . "
 window.addEvent('domready', function() {
  
 	var link = $('select-" . $this->strId . "');
@@ -115,7 +116,8 @@ window.addEvent('domready', function() {
 	// Uploader instance
 	var swf = new Swiff.Uploader({
 		path: '" . $this->Environment->base . "plugins/fancyupload/Swiff.Uploader.swf',
-		url: 'ajax.php?action=ffl&id=" . $this->strId . "&do=upload&" . session_name() . "=" . session_id() . (FE_USER_LOGGED_IN ? "&FE_USER_AUTH=" . $this->Input->cookie('FE_USER_AUTH') : '') . "&language=" . $GLOBALS['TL_LANGUAGE'] . "',
+		url: 'ajax.php?action=ffl&id=" . $this->strId . "&do=upload&" . session_name() . "=" . session_id() . (FE_USER_LOGGED_IN ? "&FE_USER_AUTH=" . $this->Input->cookie('FE_USER_AUTH') : '') . "&language=" . $GLOBALS['TL_LANGUAGE'] . "&bypassToken=1',
+		data: ('REQUEST_TOKEN='+REQUEST_TOKEN),
 		queued: false,
 		multiple: false,
 		target: link,
@@ -139,23 +141,40 @@ window.addEvent('domready', function() {
 		appendCookieData: true,
 		onQueue: linkUpdate,
 		onFileComplete: function(file) {
- 
+
 			if (file.response.error) {
 				alert('" . $GLOBALS['TL_LANG']['ERR']['avatar_upload'] . "');
 				console.log(file.response);
 			} else {
 
-				new Asset.image(file.response.text, {
+				var json = JSON.decode(file.response.text);
+				
+				// Automatically set the new request token
+				if (json.token)
+				{
+					REQUEST_TOKEN = json.token;
+
+					// Update all forms
+					$$('input[type=\"hidden\"]').each(function(el)
+					{
+						if (el.name == 'REQUEST_TOKEN')
+						{
+							el.value = json.token;
+						}
+					});
+				}
+
+				new Asset.image(json.content, {
 					id: 'bycropper_" . $this->strId . "',
 					onload: function() {
 						new Element('form', {
 							id: 'form_" . $this->strId . "',
-							action: 'ajax.php?action=ffl&id=" . $this->strId . "&do=crop&" . session_name() . "=" . session_id() . (FE_USER_LOGGED_IN ? "&FE_USER_AUTH=" . $this->Input->cookie('FE_USER_AUTH') : '') . "&language=" . $GLOBALS['TL_LANGUAGE'] . "',
+							action: 'ajax.php?action=ffl&id=" . $this->strId . "&do=crop',
 							method: 'post',
 							send: {
 								onComplete: function() { window.location.reload() }
 							},
-							html: '<input type=\"hidden\" name=\"x\" /><input type=\"hidden\" name=\"y\" /><input type=\"hidden\" name=\"w\" /><input type=\"hidden\" name=\"h\" /><input type=\"submit\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_save'] . "\" /> <input type=\"button\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_cancel'] . "\" onclick=\"window.location.reload()\" />'
+							html: '<input type=\"hidden\" name=\"REQUEST_TOKEN\" value=\"" . REQUEST_TOKEN . "\"><input type=\"hidden\" name=\"x\"><input type=\"hidden\" name=\"y\"><input type=\"hidden\" name=\"w\"><input type=\"hidden\" name=\"h\"><input type=\"submit\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_save'] . "\"> <input type=\"button\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_cancel'] . "\" onclick=\"window.location.reload()\">'
 						}).injectAfter($('bycropper_" . $this->strId . "')).addEvent('click', function() { this.send(); return false; });
 						
 						new ByCropper('bycropper_" . $this->strId . "', 'form_" . $this->strId . "', {
@@ -197,12 +216,25 @@ window.addEvent('domready', function() {
 	$$('#fancyavatar_" . $this->strId . " .delete')[0].addEvent('click', function() {
 		if (confirm('" . $GLOBALS['TL_LANG']['MSC']['avatar_confirm'] . "'))
 		{
-			new Request({
-				url: 'ajax.php?action=ffl&id=" . $this->strId . "&do=delete&" . session_name() . "=" . session_id() . (FE_USER_LOGGED_IN ? "&FE_USER_AUTH=" . $this->Input->cookie('FE_USER_AUTH') : '') . "&language=" . $GLOBALS['TL_LANGUAGE'] . "',
-				onComplete: function(txt, xml) {
-					$('fancyavatar_" . $this->strId . "').setStyle('background-image', 'url(' + txt + ')');
+			new Request.JSON({
+				url: 'ajax.php?action=ffl&id=" . $this->strId . "&do=delete',
+				onComplete: function(json) {
+					if (json.token)
+					{
+						REQUEST_TOKEN = json.token;
+	
+						// Update all forms
+						$$('input[type=\"hidden\"]').each(function(el)
+						{
+							if (el.name == 'REQUEST_TOKEN')
+							{
+								el.value = json.token;
+							}
+						});
+					}
+					$('fancyavatar_" . $this->strId . "').setStyle('background-image', 'url(' + json.content + ')');
 				}
-			}).send();
+			}).post({'REQUEST_TOKEN':REQUEST_TOKEN});
 		}
 		return false;
 	});
@@ -238,6 +270,10 @@ window.addEvent('domready', function() {
 				
 				// Alle bisherigen Avatar-Dateien löschen
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpg');
+				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpeg');
+				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.png');
+				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.gif');
+				
 				foreach( scandir(TL_ROOT . '/system/html/') as $file )
 				{
 					if (strpos($file, sprintf($this->filename, $this->currentRecord)) !== false)
@@ -246,8 +282,8 @@ window.addEvent('domready', function() {
 					}
 				}
 				
-				$strNewImage = $GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpg';
 				$strCroppedImage = $this->cropImage($_SESSION['FILES'][$this->strName]['tmp_name'], $this->Input->post('w'), $this->Input->post('h'), $this->Input->post('x'), $this->Input->post('y'));
+				$strNewImage = $GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.' . pathinfo($strCroppedImage, PATHINFO_EXTENSION);
 				
 				$this->Files->rename($strCroppedImage, $strNewImage);
 				
@@ -257,7 +293,13 @@ window.addEvent('domready', function() {
 				
 			case 'delete':
 				$this->import('Files');
+
+				// Alle bisherigen Avatar-Dateien löschen
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpg');
+				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpeg');
+				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.png');
+				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.gif');
+				
 				return $this->getDefaultAvatar();
 				break;
 		}
@@ -548,7 +590,7 @@ window.addEvent('domready', function() {
 				$arrSize[1] = $arrTag[4];
 			}
 
-			return sprintf('<img src="%s" alt="" height="%s" width="%s" class="avatar" />', 
+			return sprintf('<img src="%s" alt="" height="%s" width="%s" class="avatar">', 
 							(is_file(TL_ROOT . '/' . $strImage) ? $this->getImage($strImage, $arrSize[0], $arrSize[1]) : $this->getDefaultAvatar($arrSize)),
 							$arrSize[1],
 							$arrSize[0]);

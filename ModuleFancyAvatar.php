@@ -57,7 +57,7 @@ class ModuleFancyAvatar extends Module
 	
 	protected function compile()
 	{
-		$objAvatar = new FormFancyAvatar(array('id'=>'avatar', 'name'=>'avatar', 'tableless'=>true, 'strTable'=>'tl_member', 'currentRecord'=>$this->User->id, 'value'=>$this->User->avatar));
+		$objAvatar = new FormFancyAvatar(array('id'=>'avatar', 'name'=>'avatar', 'tableless'=>true, 'strTable'=>'tl_member', 'filename'=>'member_%s', 'currentRecord'=>$this->User->id, 'value'=>$this->User->avatar));
 		
 		$this->Template->fields = $objAvatar->parse();
 	}
