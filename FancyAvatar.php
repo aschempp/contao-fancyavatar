@@ -192,6 +192,9 @@ window.addEvent('domready', function() {
 		},
 		onComplete: function() {
 			link.set('html', linkIdle);
+		},
+		onReposition: function(coords, box, target) {
+			box.setStyle('top', target.getCoordinates().top);
 		}
 	});
  
