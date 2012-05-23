@@ -144,10 +144,12 @@ window.addEvent('domready', function() {
 
 			if (file.response.error) {
 				alert('" . $GLOBALS['TL_LANG']['ERR']['avatar_upload'] . "');
-				console.log(file.response);
 			} else {
-
-				var json = JSON.decode(file.response.text);
+				var flash = document.getElement('.swiff-uploader-box'),
+					json = JSON.decode(file.response.text);
+				
+				if (flash)
+					flash.destroy();
 				
 				// Automatically set the new request token
 				if (json.token)
@@ -187,7 +189,6 @@ window.addEvent('domready', function() {
 						});
 					}
 				}).replaces($('fancyavatar_" . $this->strId . "'));
-
 			}
 		},
 		onComplete: function() {
