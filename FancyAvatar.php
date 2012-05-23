@@ -95,12 +95,20 @@ class FancyAvatar extends Widget
 						($this->maxdims[0] + 2),
 						$this->strId,
 						$GLOBALS['TL_LANG']['MSC']['avatar_upload']);
-						
-						
+
+		if (TL_MODE == 'BE' || $objPage->outputFormat == 'html')
+		{
+			$strBuffer .= '
+<script>';
+		}
+		else
+		{
+			$strBuffer .= '
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--';
+		}
 		
 		$strBuffer .= "
-<script type=\"text/javascript\">
-<!--//--><![CDATA[//><!--
 " . (TL_MODE == 'FE' ? "var REQUEST_TOKEN = '".REQUEST_TOKEN."';" : '') . "
 window.addEvent('domready', function() {
  
@@ -116,7 +124,7 @@ window.addEvent('domready', function() {
 	// Uploader instance
 	var swf = new Swiff.Uploader({
 		path: '" . $this->Environment->base . "plugins/fancyupload/Swiff.Uploader.swf',
-		url: 'ajax.php?action=ffl&id=" . $this->strId . "&do=upload&" . session_name() . "=" . session_id() . (FE_USER_LOGGED_IN ? "&FE_USER_AUTH=" . $this->Input->cookie('FE_USER_AUTH') : '') . "&language=" . $GLOBALS['TL_LANGUAGE'] . "&bypassToken=1',
+		url: 'ajax.php?action=ffl&id=" . $this->strId . "&do=upload&" . session_name() . "=" . session_id() . (FE_USER_LOGGED_IN ? "&FE_USER_AUTH=" . $this->Input->cookie('FE_USER_AUTH') : '') . "&language=" . $GLOBALS['TL_LANGUAGE'] . "&bypassToken=1&page=" . $objPage->id . "',
 		data: ('REQUEST_TOKEN='+REQUEST_TOKEN),
 		queued: false,
 		multiple: false,
@@ -144,6 +152,7 @@ window.addEvent('domready', function() {
 
 			if (file.response.error) {
 				alert('" . $GLOBALS['TL_LANG']['ERR']['avatar_upload'] . "');
+				window.location.reload();
 			} else {
 				var flash = document.getElement('.swiff-uploader-box'),
 					json = JSON.decode(file.response.text);
@@ -242,10 +251,19 @@ window.addEvent('domready', function() {
 		}
 		return false;
 	});
- 
-});
+});";
+
+		if (TL_MODE == 'BE' || $objPage->outputFormat == 'html')
+		{
+			$strBuffer .= '
+</script>';
+		}
+		else
+		{
+			$strBuffer .= '
 //--><!]]>
-</script>";
+</script>';
+		}
 		
 						
 		return $strBuffer;
