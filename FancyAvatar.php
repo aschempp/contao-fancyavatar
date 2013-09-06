@@ -289,12 +289,12 @@ window.addEvent('domready', function() {
 				foreach (scandir(TL_ROOT . '/assets/images/') as $folder)
 				{
 				    foreach (scandir(TL_ROOT . '/assets/images/' . $folder . '/') as $file)
-				{
-					if (strpos($file, sprintf($this->filename, $this->currentRecord)) !== false)
-					{
+				    {
+    					if (strpos($file, sprintf($this->filename, $this->currentRecord)) !== false)
+    					{
     						$this->Files->delete('assets/images/' . $folder . '/' . $file);
     					}
-					}
+    				}
 				}
 
 				$strCroppedImage = $this->cropImage($_SESSION['FILES'][$this->strName]['tmp_name'], $this->Input->post('w'), $this->Input->post('h'), $this->Input->post('x'), $this->Input->post('y'));
