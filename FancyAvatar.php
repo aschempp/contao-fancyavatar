@@ -235,22 +235,9 @@ window.addEvent('domready', function() {
 			new Request.JSON({
 				url: 'ajax.php?action=ffl&id=" . $this->strId . "&do=delete',
 				onComplete: function(json) {
-					if (json.token)
-					{
-						REQUEST_TOKEN = json.token;
-
-						// Update all forms
-						$$('input[type=\"hidden\"]').each(function(el)
-						{
-							if (el.name == 'REQUEST_TOKEN')
-							{
-								el.value = json.token;
-							}
-						});
-					}
 					$('fancyavatar_" . $this->strId . "').setStyle('background-image', 'url(' + json.content + ')');
 				}
-			}).post({'REQUEST_TOKEN':REQUEST_TOKEN});
+			}).post({'REQUEST_TOKEN':Contao.request_token});
 		}
 		return false;
 	});
