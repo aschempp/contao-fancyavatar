@@ -10,12 +10,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program. If not, please visit the Free
  * Software Foundation website at <http://www.gnu.org/licenses/>.
@@ -30,14 +30,14 @@
 
 class FancyAvatar extends Widget
 {
-	
+
 	/**
 	 * Template
 	 * @var string
 	 */
 	protected $strTemplate = 'be_widget';
-	
-	
+
+
 	/**
 	 * Make sure we know the ID for ajax upload session data
 	 * @param array
@@ -46,17 +46,17 @@ class FancyAvatar extends Widget
 	{
 		if (!$arrAttributes)
 			parent::__construct(false);
-		
+
 		$this->strId = $arrAttributes['id'];
 		$_SESSION['AJAX-FFL'][$this->strId] = array('type'=>'avatar');
-		
+
 		parent::__construct($arrAttributes);
 	}
-	
-	
+
+
 	/**
 	 * Store config for ajax upload.
-	 * 
+	 *
 	 * @access public
 	 * @param string $strKey
 	 * @param mixed $varValue
@@ -65,32 +65,32 @@ class FancyAvatar extends Widget
 	public function __set($strKey, $varValue)
 	{
         if (!is_object($varValue)) {
-		$_SESSION['AJAX-FFL'][$this->strId][$strKey] = $varValue;
+    		$_SESSION['AJAX-FFL'][$this->strId][$strKey] = $varValue;
         }
 
 		parent::__set($strKey, $varValue);
 	}
-	
-	
+
+
 	public function generate()
 	{
 		$this->filename = $this->filename ? $this->filename : $this->strTable.'_%s';
 		$this->maxdims = $this->maxdims ? $this->maxdims : deserialize($GLOBALS['TL_CONFIG']['avatar_maxdims'], true);
 		$this->maxsize = $this->maxsize ? $this->maxsize : $GLOBALS['TL_CONFIG']['avatar_maxsize'];
-		
+
 		if (!$this->maxdims[1])
 		{
 			$arrSize = $this->maxdims;
 			$arrSize[1] = $arrSize[0];
 			$this->maxdims = $arrSize;
 		}
-		
-		
+
+
 		$GLOBALS['TL_CSS'][] = 'system/modules/fancyavatar/assets/fancyavatar.css';
 		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/fancyavatar/assets/bycropper.js';
 		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/fancyavatar/assets/fancyupload.js';
-		
-		
+
+
 		$strBuffer = sprintf('<div id="fancyavatar_%s" class="fancyavatar" style="background-image:url(%s); height:%spx; width:%spx"><a href="#" id="select-%s" class="upload">%s</a><a class="delete" href="#"><img src="system/themes/default/images/delete.gif"></a></div>',
 						$this->strId,
 						(is_file(TL_ROOT . '/' . $this->varValue) ? $this->getImage($this->varValue, $this->maxdims[0], $this->maxdims[1]) : $this->getDefaultAvatar()),
@@ -110,20 +110,20 @@ class FancyAvatar extends Widget
 <script type="text/javascript">
 <!--//--><![CDATA[//><!--';
 		}
-		
+
 		$strBuffer .= "
 " . (TL_MODE == 'FE' ? "var Contao = Contao || {}; Contao.request_token = '".REQUEST_TOKEN."';" : '') . "
 window.addEvent('domready', function() {
- 
+
 	var link = $('select-" . $this->strId . "');
 	var linkIdle = link.get('html');
- 
+
 	function linkUpdate() {
 		if (!swf.uploading) return;
 		var size = Swiff.Uploader.formatUnit(swf.size, 'b');
 		link.set('html', '<span class=\"small\">' + swf.percentLoaded + '% of ' + size + '</span>');
 	}
- 
+
 	// Uploader instance
 	var swf = new Swiff.Uploader({
 		path: '" . $this->Environment->base . "system/modules/fancyavatar/assets/Swiff.Uploader.swf',
@@ -159,10 +159,10 @@ window.addEvent('domready', function() {
 			} else {
 				var flash = document.getElement('.swiff-uploader-box'),
 					json = JSON.decode(file.response.text);
-				
+
 				if (flash)
 					flash.destroy();
-				
+
 				// Automatically set the new request token
 				if (json.token)
 				{
@@ -189,8 +189,8 @@ window.addEvent('domready', function() {
 								onComplete: function() { window.location.reload() }
 							},
 							html: '<input type=\"hidden\" name=\"REQUEST_TOKEN\" value=\"" . REQUEST_TOKEN . "\"><input type=\"hidden\" name=\"x\"><input type=\"hidden\" name=\"y\"><input type=\"hidden\" name=\"w\"><input type=\"hidden\" name=\"h\"><input type=\"submit\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_save'] . "\"> <input type=\"button\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_cancel'] . "\" onclick=\"window.location.reload()\">'
-						}).injectAfter($('bycropper_" . $this->strId . "')).addEvent('click', function() { this.send(); return false; });
-						
+						}).inject($('bycropper_" . $this->strId . "'), 'after').addEvent('click', function() { this.send(); return false; });
+
 						new ByCropper('bycropper_" . $this->strId . "', 'form_" . $this->strId . "', {
 							borderPath: 'system/modules/fancyavatar/html/',
 							minWidth: " . $this->maxdims[0] . ",
@@ -210,7 +210,7 @@ window.addEvent('domready', function() {
 			box.setStyle('top', target.getCoordinates().top);
 		}
 	});
- 
+
 	// Button state
 	link.addEvents({
 		click: function() {
@@ -228,7 +228,7 @@ window.addEvent('domready', function() {
 			this.focus();
 		}
 	});
-	
+
 	$$('#fancyavatar_" . $this->strId . " .delete')[0].addEvent('click', function() {
 		if (confirm('" . $GLOBALS['TL_LANG']['MSC']['avatar_confirm'] . "'))
 		{
@@ -238,7 +238,7 @@ window.addEvent('domready', function() {
 					if (json.token)
 					{
 						REQUEST_TOKEN = json.token;
-	
+
 						// Update all forms
 						$$('input[type=\"hidden\"]').each(function(el)
 						{
@@ -267,12 +267,12 @@ window.addEvent('domready', function() {
 //--><!]]>
 </script>';
 		}
-		
-						
+
+
 		return $strBuffer;
 	}
-	
-	
+
+
 	/**
 	 * This is where all the magic happens!
 	 */
@@ -282,23 +282,23 @@ window.addEvent('domready', function() {
 		{
 			case 'upload':
 				$strImage = $this->uploadAvatar();
-				
+
 				if ($strImage === false)
 					return 'fehler';
-					
+
 				return $strImage;
 				break;
-				
+
 			case 'crop':
 				$this->import('Database');
 				$this->import('Files');
-				
+
 				// Alle bisherigen Avatar-Dateien löschen
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpg');
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpeg');
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.png');
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.gif');
-				
+
 				foreach( scandir(TL_ROOT . '/system/html/') as $file )
 				{
 					if (strpos($file, sprintf($this->filename, $this->currentRecord)) !== false)
@@ -306,16 +306,16 @@ window.addEvent('domready', function() {
 						$this->Files->delete('system/html/' . $file);
 					}
 				}
-				
+
 				$strCroppedImage = $this->cropImage($_SESSION['FILES'][$this->strName]['tmp_name'], $this->Input->post('w'), $this->Input->post('h'), $this->Input->post('x'), $this->Input->post('y'));
 				$strNewImage = $GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.' . pathinfo($strCroppedImage, PATHINFO_EXTENSION);
-				
+
 				$this->Files->rename($strCroppedImage, $strNewImage);
-				
+
 				$this->Database->prepare("UPDATE " . $this->strTable . " SET " . $this->strName . "=? WHERE id=?")->execute($strNewImage, $this->currentRecord);
 				$this->log('File cropped successfully', 'FancyAvatar generateAjax()', TL_FILES);
 				break;
-				
+
 			case 'delete':
 				$this->import('Files');
 
@@ -324,65 +324,65 @@ window.addEvent('domready', function() {
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.jpeg');
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.png');
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.gif');
-				
+
 				return $this->getDefaultAvatar();
 				break;
 		}
 	}
-	
-	
+
+
 	protected function uploadAvatar()
 	{
 		if ($_FILES && array_key_exists($this->strName, $_FILES) && strlen($_FILES[$this->strName]['name']))
 		{
 			$file = $_FILES[$this->strName];
-	
+
 			// Romanize the filename
 			$file['name'] = utf8_romanize($file['name']);
-	
+
 			// File was not uploaded
 			if (!is_uploaded_file($file['tmp_name']))
 			{
 				unset($_FILES[$this->strName]);
-				
+
 				if (in_array($file['error'], array(1, 2)))
 				{
 					$this->log('File "'.$file['name'].'" exceeds the maximum file size of '.$maxlength_kb.' kB', 'FormFancyUpload generateAjax()', TL_ERROR);
-					
+
 					return false;
 				}
-	
+
 				if ($file['error'] == 3)
 				{
 					$this->log('File "'.$file['name'].'" was only partially uploaded', 'FormFancyUpload generateAjax()', TL_ERROR);
-					
+
 					return false;
 				}
 			}
-		
-	
+
+
 			$_SESSION['FILES'][$this->strName] = $_FILES[$this->strName];
 
 			$strUploadFolder = 'system/tmp';
 			move_uploaded_file($file['tmp_name'], TL_ROOT . '/' . $strUploadFolder . '/' . $file['name']);
-			
+
 			$intWidth = $GLOBALS['TL_CONFIG']['avatar_preview'] ? $GLOBALS['TL_CONFIG']['avatar_preview'] : 500;
 			$imgSize = getimagesize(TL_ROOT . '/' . $strUploadFolder . '/' . $file['name']);
-			
+
 			if ($imgSize[0] < $intWidth)
 				$intWidth = $imgSize[0];
-			
+
 			$_SESSION['FILES'][$this->strName]['tmp_name'] = $this->getImage($strUploadFolder . '/' . $file['name'], $intWidth, 0);
-			
+
 			$this->log('File "'.$file['name'].'" uploaded successfully', 'FancyAvatar uploadAvatar()', TL_FILES);
-					
+
 			return $_SESSION['FILES'][$this->strName]['tmp_name'];
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	protected function cropImage($image, $width, $height, $x, $y, $target=null)
 	{
 		if (!strlen($image))
@@ -522,22 +522,22 @@ window.addEvent('domready', function() {
 		// Return path to new image
 		return $strCacheName;
 	}
-	
-	
+
+
 	protected function getAvatarDirectory()
 	{
 		$strDir = strlen($GLOBALS['TL_CONFIG']['avatar_dir']) ? $GLOBALS['TL_CONFIG']['avatar_dir'] : ($GLOBALS['TL_CONFIG']['uploadPath'] . '/avatars');
-		
+
 		if (!is_dir(TL_ROOT . '/' . $strDir))
 		{
 			$this->import('Files');
 			$this->Files->mkdir($strDir);
 		}
-		
+
 		return $strDir;
 	}
-	
-	
+
+
 	protected function getDefaultAvatar($arrSize=false)
 	{
 		if (is_file(TL_ROOT . '/' . $GLOBALS['TL_CONFIG']['avatar_default']))
@@ -545,7 +545,7 @@ window.addEvent('domready', function() {
 			if (!$arrSize)
 			{
 				$arrSize = deserialize($GLOBALS['TL_CONFIG']['avatar_maxdims'], true);
-				
+
 				if (!$arrSize[1])
 				{
 					$arrSize[1] = $arrSize[0];
@@ -554,19 +554,19 @@ window.addEvent('domready', function() {
 
 			return $this->getImage($GLOBALS['TL_CONFIG']['avatar_default'], $arrSize[0], $arrSize[1]);
 		}
-			
+
 		return '';
 	}
-	
-	
+
+
 	public function replaceTags($strTag)
 	{
 		$arrTag = trimsplit('::', $strTag);
-		
+
 		if( $arrTag[0] == 'avatar' )
 		{
 			$strImage = '';
-			
+
 			// Avatar for current user
 			if (count($arrTag) == 1)
 			{
@@ -588,39 +588,39 @@ window.addEvent('domready', function() {
 			else
 			{
 				$this->import('Database');
-				
+
 				$objUser = $this->Database->prepare("SELECT * FROM tl_" . ($arrTag[2] == 'be' ? 'user' : 'member') . " WHERE id=?")->limit(1)->execute($arrTag[1]);
-				
+
 				if ($objUser->numRows)
 				{
 					$strImage = $objUser->avatar;
 				}
 			}
-			
+
 			$arrSize = deserialize($GLOBALS['TL_CONFIG']['avatar_maxdims'], true);
-			
+
 			if (!$arrSize[1])
 			{
 				$arrSize[1] = $arrSize[0];
 			}
-			
+
 			if (strlen($arrTag[3]))
 			{
 				$arrSize[0] = $arrTag[3];
 				$arrSize[1] = $arrTag[3];
 			}
-			
+
 			if (strlen($arrTag[4]))
 			{
 				$arrSize[1] = $arrTag[4];
 			}
 
-			return sprintf('<img src="%s" alt="" height="%s" width="%s" class="avatar">', 
+			return sprintf('<img src="%s" alt="" height="%s" width="%s" class="avatar">',
 							(is_file(TL_ROOT . '/' . $strImage) ? $this->getImage($strImage, $arrSize[0], $arrSize[1]) : $this->getDefaultAvatar($arrSize)),
 							$arrSize[1],
 							$arrSize[0]);
 		}
-		
+
 		return false;
 	}
 }
