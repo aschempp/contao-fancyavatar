@@ -286,11 +286,14 @@ window.addEvent('domready', function() {
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.png');
 				$this->Files->delete($GLOBALS['TL_CONFIG']['avatar_dir'] . '/' . sprintf($this->filename, $this->currentRecord) . '.gif');
 
-				foreach( scandir(TL_ROOT . '/system/html/') as $file )
+				foreach (scandir(TL_ROOT . '/assets/images/') as $folder)
+				{
+				    foreach (scandir(TL_ROOT . '/assets/images/' . $folder . '/') as $file)
 				{
 					if (strpos($file, sprintf($this->filename, $this->currentRecord)) !== false)
 					{
-						$this->Files->delete('system/html/' . $file);
+    						$this->Files->delete('assets/images/' . $folder . '/' . $file);
+    					}
 					}
 				}
 
@@ -396,7 +399,8 @@ window.addEvent('domready', function() {
 			return null;
 		}
 
-		$strCacheName = 'system/html/' . $objFile->filename . '-' . substr(md5('-w' . $width . '-h' . $height . '-' . $image), 0, 8) . '.' . $objFile->extension;
+        $strToken = substr(md5('-w' . $width . '-h' . $height . '-' . $image), 0, 8);
+		$strCacheName = 'assets/images/' . substr($strToken, 0, 1) . '/' . $objFile->filename . '-' . $strToken . '.' . $objFile->extension;
 
 		// Resize original image
 		if ($target)
