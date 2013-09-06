@@ -188,7 +188,7 @@ window.addEvent('domready', function() {
 							send: {
 								onComplete: function() { window.location.reload() }
 							},
-							html: '<input type=\"hidden\" name=\"REQUEST_TOKEN\" value=\"" . REQUEST_TOKEN . "\"><input type=\"hidden\" name=\"x\"><input type=\"hidden\" name=\"y\"><input type=\"hidden\" name=\"w\"><input type=\"hidden\" name=\"h\"><input type=\"submit\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_save'] . "\"> <input type=\"button\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_cancel'] . "\" onclick=\"window.location.reload()\">'
+							html: '<input type=\"hidden\" name=\"REQUEST_TOKEN\" value=\"" . REQUEST_TOKEN . "\"><input type=\"hidden\" name=\"x\"><input type=\"hidden\" name=\"y\"><input type=\"hidden\" name=\"w\"><input type=\"hidden\" name=\"h\"><input type=\"submit\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_save'] . "\" onclick=\"$(\'form_" . $this->strId . "\').send();return false\"> <input type=\"button\" value=\"" . $GLOBALS['TL_LANG']['MSC']['avatar_cancel'] . "\" onclick=\"window.location.reload()\">'
 						}).inject($('bycropper_" . $this->strId . "'), 'after').addEvent('click', function() { this.send(); return false; });
 
 						new ByCropper('bycropper_" . $this->strId . "', 'form_" . $this->strId . "', {
