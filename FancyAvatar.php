@@ -64,7 +64,10 @@ class FancyAvatar extends Widget
 	 */
 	public function __set($strKey, $varValue)
 	{
+        if (!is_object($varValue)) {
 		$_SESSION['AJAX-FFL'][$this->strId][$strKey] = $varValue;
+        }
+
 		parent::__set($strKey, $varValue);
 	}
 	
