@@ -192,7 +192,7 @@ window.addEvent('domready', function() {
 						}).inject($('bycropper_" . $this->strId . "'), 'after').addEvent('click', function() { this.send(); return false; });
 
 						new ByCropper('bycropper_" . $this->strId . "', 'form_" . $this->strId . "', {
-							borderPath: 'system/modules/fancyavatar/html/',
+							borderPath: 'system/modules/fancyavatar/assets',
 							minWidth: " . $this->maxdims[0] . ",
 							minHeight: " . $this->maxdims[1] . ",
 							ratio: [" . $this->maxdims[0] . ", " . $this->maxdims[1] . "],
