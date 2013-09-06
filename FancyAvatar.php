@@ -112,7 +112,7 @@ class FancyAvatar extends Widget
 		}
 		
 		$strBuffer .= "
-" . (TL_MODE == 'FE' ? "var REQUEST_TOKEN = '".REQUEST_TOKEN."';" : '') . "
+" . (TL_MODE == 'FE' ? "var Contao = Contao || {}; Contao.request_token = '".REQUEST_TOKEN."';" : '') . "
 window.addEvent('domready', function() {
  
 	var link = $('select-" . $this->strId . "');
@@ -128,7 +128,7 @@ window.addEvent('domready', function() {
 	var swf = new Swiff.Uploader({
 		path: '" . $this->Environment->base . "system/modules/fancyavatar/assets/Swiff.Uploader.swf',
 		url: 'ajax.php?action=ffl&id=" . $this->strId . "&do=upload&" . session_name() . "=" . session_id() . (FE_USER_LOGGED_IN ? "&FE_USER_AUTH=" . $this->Input->cookie('FE_USER_AUTH') : '') . "&language=" . $GLOBALS['TL_LANGUAGE'] . "&bypassToken=1&page=" . $objPage->id . "',
-		data: ('REQUEST_TOKEN='+REQUEST_TOKEN),
+		data: ('REQUEST_TOKEN='+Contao.request_token),
 		queued: false,
 		multiple: false,
 		target: link,
