@@ -86,9 +86,9 @@ class FancyAvatar extends Widget
 		}
 		
 		
-		$GLOBALS['TL_CSS'][] = 'system/modules/fancyavatar/html/fancyavatar.css';
-		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/fancyavatar/html/bycropper.js';
-		$GLOBALS['TL_JAVASCRIPT'][] = 'plugins/fancyupload/js/fancyupload.js';
+		$GLOBALS['TL_CSS'][] = 'system/modules/fancyavatar/assets/fancyavatar.css';
+		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/fancyavatar/assets/bycropper.js';
+		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/fancyavatar/assets/fancyupload.js';
 		
 		
 		$strBuffer = sprintf('<div id="fancyavatar_%s" class="fancyavatar" style="background-image:url(%s); height:%spx; width:%spx"><a href="#" id="select-%s" class="upload">%s</a><a class="delete" href="#"><img src="system/themes/default/images/delete.gif"></a></div>',
@@ -126,7 +126,7 @@ window.addEvent('domready', function() {
  
 	// Uploader instance
 	var swf = new Swiff.Uploader({
-		path: '" . $this->Environment->base . "plugins/fancyupload/Swiff.Uploader.swf',
+		path: '" . $this->Environment->base . "system/modules/fancyavatar/assets/Swiff.Uploader.swf',
 		url: 'ajax.php?action=ffl&id=" . $this->strId . "&do=upload&" . session_name() . "=" . session_id() . (FE_USER_LOGGED_IN ? "&FE_USER_AUTH=" . $this->Input->cookie('FE_USER_AUTH') : '') . "&language=" . $GLOBALS['TL_LANGUAGE'] . "&bypassToken=1&page=" . $objPage->id . "',
 		data: ('REQUEST_TOKEN='+REQUEST_TOKEN),
 		queued: false,
